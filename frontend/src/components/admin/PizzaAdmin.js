@@ -76,32 +76,9 @@ const PizzaAdmin = () => {
     };
 
   const handleUpload = async () => {
-    if (!selectedFile) return;
-
-    const formData = new FormData();
-    formData.append('image', selectedFile);
-
-    try {
-      const response = await axios.post('http://localhost:5000/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      console.log("Risposta da upload:", response.data);
-
-      // Aggiorna l'URL dell'immagine con la risposta dal server
-      setNewPizza({ ...newPizza, imageUrl: response.data.imageUrl });
-         setSnackbarMessage('Immagine caricata con successo!'); // Cambia il messaggio
-            setSnackbarSeverity('success');
-            setOpenSnackbar(true);
-    } catch (error) {
-         setError(error);
-      console.error('Errore durante l\'upload:', error);
-       setSnackbarMessage('Errore durante l\'upload dell\'immagine: ' + error.message);  // Messaggio di errore
-            setSnackbarSeverity('error'); // Imposta la severità a "error"
-            setOpenSnackbar(true);
-    }
+   
+    const data = new FormData()
+    data.append('file', selectedFile)
   };
 
   const handleCloseSnackbar = (event, reason) => {
@@ -111,33 +88,20 @@ const PizzaAdmin = () => {
         setOpenSnackbar(false);
     };
 
-  const handleBrowseClick = async () => {
+  const handleBrowseClick = () => {
 
-    
-    if (!selectedFile) return;
-
-    const formData = new FormData();
-    formData.append('image', selectedFile);
-    try{
-        const uploadDir = path.join(__dirname, '../uploads');
-       
-    } catch (e) {
-        console.log (e)
-    }
-   
-    fileInputRef.current.click(); // Simula il click sull'input file nascosto
+      // Eseguiamo l'upload e la generazione della anteprima solo se esiste un file
+      fileInputRef.current.click(); // Simula il click sull'input file nascosto
   };
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        console.log("File Selezionato:", selectedFile);
         console.log("Dati Pizza:", newPizza); // Aggiungi questo console.log
 
         try {
-            // Esegui l'upload dell'immagine prima di salvare la pizza
-            await handleUpload();
+            
 
             if (selectedPizza) {
                 // Se c'è una pizza selezionata, aggiornala
@@ -158,10 +122,20 @@ const PizzaAdmin = () => {
             });
             setSelectedPizza(null);
             setSelectedFile(null); // Resetta il file selezionato;
-        } catch (err) {
-            setError(err);
-            console.error("ERRORE in handleSubmit", err);
-        }
+              setSnackbarMessage('Operazione eseguita con successo!');
+        setSnackbarSeverity('success');
+        setOpenSnackbar(true);
+    }  catch (err) {
+                setError(err);
+                console.error("Errore durante il salvataggio della pizza:", err);
+                if (err && err.response && err.response.data) {
+                    setSnackbarMessage('Errore durante l\'azione: ' + err.response.data.message);
+                } else {
+                    setSnackbarMessage('Si è verificato un errore sconosciuto durante il salvataggio.');
+                }
+                setSnackbarSeverity('error');
+                setOpenSnackbar(true);
+            }
     };
 
     const handleDelete = async (id) => {
@@ -171,7 +145,7 @@ const PizzaAdmin = () => {
         } catch (err) {
             setSelectedFile(null); // Resetta il file selezionato;
             setError(err);
-               setSnackbarMessage('Pizza eliminata con successo!'); // Cambia il messaggio
+            setSnackbarMessage('Pizza eliminata con successo!');
             setSnackbarSeverity('success');
             setOpenSnackbar(true);
         };

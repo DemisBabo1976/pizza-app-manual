@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Link, Routes, Outlet, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Link, Routes, Outlet } from 'react-router-dom';
 import PizzaList from './components/PizzaList';
 import CategoryList from './components/CategoryList';
 import OrderList from './components/OrderList';
@@ -18,7 +18,6 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import {Fastfood as FastfoodIcon, Category as CategoryIcon, ShoppingCart as ShoppingCartIcon, Home as HomeIcon} from '@mui/icons-material';
-
 import AdminDashboard from './components/admin/AdminDashboard';
 
 const drawerWidth = 240;
@@ -88,13 +87,14 @@ function App() {
                                 <ShoppingCartIcon />
                             </ListItemIcon>
                             <ListItemText primary="Ordini" />
-                         </ListItem>
-                         <ListItem button component={Link} to="/admin">
-                          <ListItemIcon>
-                              <ShoppingCartIcon />
-                          </ListItemIcon>
-                            <ListItemText primary="Admin" />
-                         </ListItem>
+                       </ListItem>
+                         {/*LASCIA CODICE ATTIVO*/}
+                    <ListItem button component={Link} to="/admin">
+                      <ListItemIcon>
+                          <ShoppingCartIcon />
+                      </ListItemIcon>
+                      <ListItemText primary="Admin" />
+                    </ListItem>
                     </List>
                 </Drawer>
                 <Box component="main" sx={{ flexGrow: 1, p: 3, marginTop:  '7rem' }}>
@@ -103,8 +103,7 @@ function App() {
                         <Route path="/pizzas" element={<PizzaList />} />
                         <Route path="/categories" element={<CategoryList />} />
                         <Route path="/orders" element={<OrderList />} />
-                      {/*INSERIAMO UNA RIGA PER VISUALIZZARE ADMIN DASHBOARD. la pagina è sempre http://localhost:3002/admin
-                        il resto è gestito tutto all'interno del component, altrimenti impazziamo*/}
+                        {/*CHIAMARE CORRETTAMENTE LA PAGINA ADMIN*/}
                         <Route path="/admin" element={<AdminDashboard />} />
                     </Routes>
                     <Outlet />
