@@ -11,9 +11,15 @@ import OrderAdmin from './OrderAdmin';
 
 function AdminDashboard() {
     return (
-    <>
-      <h1>SONO DENTRO LA PAGINA ADMIN</h1>
-        </>
+        <Box component="main" sx={{ flexGrow: 1, p: 3, marginTop: '7rem' }}>
+            <Routes>
+                <Route path="/" element={<PizzaAdmin />} />
+                <Route path="/pizzas" element={<PizzaAdmin />} />
+                <Route path="/categories" element={<CategoryAdmin />} />
+                <Route path="/orders" element={<OrderAdmin />} />
+            </Routes>
+            <Outlet />
+        </Box>
     );
 }
 

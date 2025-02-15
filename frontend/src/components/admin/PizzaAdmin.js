@@ -111,7 +111,20 @@ const PizzaAdmin = () => {
         setOpenSnackbar(false);
     };
 
-  const handleBrowseClick = () => {
+  const handleBrowseClick = async () => {
+
+    
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append('image', selectedFile);
+    try{
+        const uploadDir = path.join(__dirname, '../uploads');
+       
+    } catch (e) {
+        console.log (e)
+    }
+   
     fileInputRef.current.click(); // Simula il click sull'input file nascosto
   };
 
