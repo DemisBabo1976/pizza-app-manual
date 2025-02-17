@@ -18,6 +18,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AddIcon from '@mui/icons-material/Add';
+import FastfoodIcon from '@mui/icons-material/Fastfood'; // Importa l'icona Pizza
 import './PizzaAdmin.css';
 
 const PizzaAdmin = () => {
@@ -36,7 +37,7 @@ const PizzaAdmin = () => {
         ingredients: [],
         sizes: []
     });
-   const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
 
     const fileInputRef = useRef(null);
 
@@ -60,58 +61,55 @@ const PizzaAdmin = () => {
     };
 
 
-  const handleFileSelect = (event) => {
-    setSelectedFile(event.target.files[0]);
-    // Mostra l'immagine selezionata
-    if (event.target.files && event.target.files[0]) {
-        let reader = new FileReader();
-        reader.onload = (e) => {
-            setNewPizza({...newPizza, imageUrl: e.target.result})
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
-  };
+    const handleFileSelect = (event) => {
+        setSelectedFile(event.target.files[0]);
+        // Mostra l'immagine selezionata
+        if (event.target.files && event.target.files[0]) {
+            let reader = new FileReader();
+            reader.onload = (e) => {
+                setNewPizza({...newPizza, imageUrl: e.target.result})
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    };
 
-  const handleUpload = async () => {
-    if (!selectedFile) return;
+    const handleUpload = async () => {
+        if (!selectedFile) return;
 
-    const formData = new FormData();
-    formData.append('image', selectedFile);
+        const formData = new FormData();
+        formData.append('image', selectedFile);
 
-    try {
-      const response = await axios.post('http://localhost:5000/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+        try {
+            const response = await axios.post('http://localhost:5000/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
 
-      console.log("Risposta da upload:", response.data);
+            console.log("Risposta da upload:", response.data);
+            console.log("URL Immagine:", response.data.imageUrl);
 
-      // Aggiorna l'URL dell'immagine con la risposta dal server
-      setNewPizza({ ...newPizza, imageUrl: response.data.imageUrl });
-    } catch (error) {
-      setError(error);
-      console.error('Errore durante l\'upload:', error);
-    }
-  };
+            // Aggiorna l'URL dell'immagine con la risposta dal server
+            setNewPizza({ ...newPizza, imageUrl: response.data.imageUrl });
+        } catch (error) {
+            setError(error);
+            console.error('Errore durante l\'upload:', error);
+        }
+    };
 
-  const handleBrowseClick = () => {
-    fileInputRef.current.click(); // Simula il click sull'input file nascosto
-  };
+    const handleBrowseClick = () => {
+        fileInputRef.current.click(); // Simula il click sull'input file nascosto
+    };
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         console.log("File Selezionato:", selectedFile);
-        console.log("Dati Pizza:", newPizza); // Aggiungi questo console.log
+        console.log("Dati Pizza:", newPizza);
 
         try {
-            // Non carichiamo se c'è già una immagine
-            if(!newPizza.imageUrl.startsWith('data:image')){
-             await handleUpload();
-            }
-
+            await handleUpload(); // Chiama sempre handleUpload
 
             if (selectedPizza) {
                 // Se c'è una pizza selezionata, aggiornala
@@ -169,14 +167,6 @@ const PizzaAdmin = () => {
                 <TextField required id="price" label="Prezzo" name="price" value={newPizza.price} onChange={handleInputChange} type="number" sx={{ width: '100%', m: 1 }} />
 
                 <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', m: 1 }}>
-                    <TextField
-                        id="imageUrl"
-                        label="LINK IMMAGINE"
-                        name="imageUrl"
-                        value={newPizza.imageUrl}
-                        onChange={handleInputChange}
-                        sx={{ m: 1, width: '100%' }} /* Imposta l'altezza della TextField*/
-                    />
                     <Button
                        variant="outlined"
                        onClick={handleBrowseClick}
@@ -228,6 +218,7 @@ const PizzaAdmin = () => {
                                 <TableCell align="right" sx={{ fontWeight: 'bold', textTransform: 'uppercase', textAlign: 'center' }}>Descrizione</TableCell>
                                 <TableCell align="right" sx={{ fontWeight: 'bold', textTransform: 'uppercase', textAlign: 'center' }}>Prezzo</TableCell>
                                 <TableCell align="right" sx={{ fontWeight: 'bold', textTransform: 'uppercase', textAlign: 'center' }}>Categoria</TableCell>
+                                <TableCell align="right" sx={{ fontWeight: 'bold', textTransform: 'uppercase', textAlign: 'center' }}>Immagine</TableCell>
                                 <TableCell align="right" sx={{ fontWeight: 'bold', textTransform: 'uppercase', textAlign: 'center' }}>Azioni</TableCell>
                             </TableRow>
                         </TableHead>
@@ -244,7 +235,14 @@ const PizzaAdmin = () => {
                                     <TableCell align="right">
                                         {pizza.price.toLocaleString('it-IT', { style: 'currency', currency: 'EUR' })}
                                     </TableCell>
-                                    <TableCell align="right">{pizza.category}</TableCell>
+                                    <TableCell align="right" sx={{ fontWeight: 'bold', textTransform: 'uppercase', textAlign: 'center' }}>{pizza.category}</TableCell>
+                                    <TableCell align="right">
+                                        {pizza.imageUrl ? (
+                                            <img src={pizza.imageUrl} alt={pizza.name} style={{ maxWidth: '50px', maxHeight: '50px' }} />
+                                        ) : (
+                                            <FastfoodIcon style={{ fontSize: '50px', color: 'gray' }} />
+                                        )}
+                                    </TableCell>
                                     <TableCell align="right">
                                         <IconButton aria-label="edit"  onClick={() => handleEdit(pizza)}>
                                             <EditIcon />

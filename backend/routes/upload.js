@@ -1,36 +1,35 @@
 const express = require('express');
-const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 
-// Configurazione di Multer per salvare i file in una cartella uploads
+const router = express.Router();
+
+// Configurazione di Multer per salvare i file in una cartella specifica
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadDir = path.join(__dirname, '../uploads'); // Cartella uploads nella directory principale del backend
-        cb(null, uploadDir); // Assicurati che la cartella 'uploads' esista
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/'); // Cartella dove verranno salvate le immagini
     },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + '.' + file.originalname.split('.').pop());
+    filename: function (req, file, cb) {
+        const ext = path.extname(file.originalname); // Ottieni l'estensione del file
+        const filename = Date.now() + ext; // Crea un nome file univoco
+        cb(null, filename);
     }
 });
 
 const upload = multer({ storage: storage });
 
-// Rotta per gestire l'upload di un'immagine
+// Route per l'upload delle immagini
 router.post('/', upload.single('image'), (req, res) => {
-    console.log("Ricevuta richiesta di upload");
     if (!req.file) {
-        console.log("Nessun file incluso nella richiesta");
-        return res.status(400).send({ message: 'Nessun file è stato caricato.' });
+        return res.status(400).json({ message: 'Nessun file immagine caricato' });
     }
 
-    console.log("Dettagli file caricato:", req.file);
+    // Ottieni l'URL completo del file
+    const imageUrl = `${req.protocol}://${req.get('host')}/${req.file.path}`;
 
-    // Restituisci l'URL del file appena caricato
-    const imageUrl = `http://localhost:5000/uploads/${req.file.filename}`;
-    console.log("URL immagine:", imageUrl);
-    res.send({ imageUrl: imageUrl });
+    console.log("File caricato con successo. URL:", imageUrl);
+
+    res.status(200).json({ imageUrl: imageUrl });
 });
 
 module.exports = router;
