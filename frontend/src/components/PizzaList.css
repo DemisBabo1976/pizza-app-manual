@@ -1,0 +1,61 @@
+.pizza-list-container {
+  margin-top: 2rem;
+}
+
+.pizza-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.pizza-card:hover {
+  transform: translateY(-5px);
+}
+
+.pizza-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.pizza-content {
+  padding: 20px;
+  display: flex; /*Abilita Flexbox*/
+  flex-direction: column; /* Imposta la direzione principale come colonna */
+  justify-content: space-between;/*Distribuisce lo spazio tra gli elementi */
+  height: 100%; /* Assicura che il contenuto occupi l'altezza disponibile*/
+}
+
+.pizza-content h2 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.pizza-content p {
+  font-size: 1rem;
+  color: #666;
+  flex-grow: 1; /*Permette alla descrizione di espandersi per riempire lo spazio*/
+}
+
+.pizza-content .pizza-price {
+  font-size: 1.2rem; /* Aumenta la dimensione del prezzo */
+  font-weight: bold;
+  color: #333;
+  text-align: right; /*Allinea il testo a destra*/
+}
+
+/* Stile per le pizze senza immagine */
+.pizza-card .MuiCardMedia-root {
+    background-color: #f0f0f0; /* Colore di sfondo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    color: #aaa;
+}

@@ -17,7 +17,7 @@ import {
     Box,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import {Fastfood as FastfoodIcon, Category as CategoryIcon, ShoppingCart as ShoppingCartIcon, Home as HomeIcon} from '@mui/icons-material';
+import {Fastfood as FastfoodIcon, Category as CategoryIcon, ShoppingCart as ShoppingCartIcon, Home as HomeIcon, AccountCircle as AccountCircleIcon} from '@mui/icons-material';
 import AdminDashboard from './components/admin/AdminDashboard';
 
 const drawerWidth = 240;
@@ -91,7 +91,7 @@ function App() {
                          {/*LASCIA CODICE ATTIVO*/}
                     <ListItem button component={Link} to="/admin">
                       <ListItemIcon>
-                          <ShoppingCartIcon />
+                          <AccountCircleIcon />
                       </ListItemIcon>
                       <ListItemText primary="Admin" />
                     </ListItem>

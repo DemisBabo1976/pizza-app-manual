@@ -165,7 +165,7 @@ const PizzaAdmin = () => {
 
     return (
         <div>
-            <h1>Gestione Pizze</h1>
+            <h1>GESTIONE ARTICOLI</h1>
             <Box component="form" onSubmit={handleSubmit} sx={{ '& .MuiTextField-root': { m: 1, width: '100%' }, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', fontWeight: 'bold', textTransform: 'uppercase' }} noValidate autoComplete="off">
                  <TextField required id="name" label="Nome" name="name" value={newPizza.name} onChange={handleInputChange} sx={{ width: '100%', m: 1 }} />
                 <TextField id="description" label="Descrizione" name="description" value={newPizza.description} onChange={handleInputChange} sx={{ width: '100%', m: 1 }} />
@@ -237,7 +237,7 @@ const PizzaAdmin = () => {
             ) : error ? (
                 <div>Errore: {error.message}</div>
             ) : (
-                <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
+                <TableContainer component={Paper} sx={{ maxHeight: 400 }} className="table-container">
                     <Table sx={{ minWidth: 650 }} aria-label="simple table">
                         <TableHead>
                             <TableRow>
@@ -245,6 +245,7 @@ const PizzaAdmin = () => {
                                 <TableCell align="right" sx={{ fontWeight: 'bold', textTransform: 'uppercase', textAlign: 'center' }}>Descrizione</TableCell>
                                 <TableCell align="right" sx={{ fontWeight: 'bold', textTransform: 'uppercase', textAlign: 'center' }}>Prezzo</TableCell>
                                 <TableCell align="right" sx={{ fontWeight: 'bold', textTransform: 'uppercase', textAlign: 'center' }}>Categoria</TableCell>
+                                <TableCell align="center" sx={{ fontWeight: 'bold', textTransform: 'uppercase', textAlign: 'center' }}>Immagine</TableCell>
                                 <TableCell align="right" sx={{ fontWeight: 'bold', textTransform: 'uppercase', textAlign: 'center' }}>Azioni</TableCell>
                             </TableRow>
                         </TableHead>
@@ -262,6 +263,13 @@ const PizzaAdmin = () => {
                                         {pizza.price.toLocaleString('it-IT', { style: 'currency', currency: 'EUR' })}
                                     </TableCell>
                                     <TableCell align="right">{pizza.category}</TableCell>
+                                    <TableCell align="center">
+                                        <img
+                                          src={pizza.imageUrl ? pizza.imageUrl : "immagin/pizza-placeholder.png"}
+                                          alt={pizza.name}
+                                          style={{ maxWidth: '50px', maxHeight: '50px' }}
+                                        />
+                                    </TableCell>
                                     <TableCell align="right">
                                         <IconButton aria-label="edit"  onClick={() => handleEdit(pizza)}>
                                             <EditIcon />

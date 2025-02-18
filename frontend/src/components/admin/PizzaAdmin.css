@@ -1,0 +1,10 @@
+.table-container {
+  overflow: auto; /* Abilita la barra di scorrimento se il contenuto è troppo lungo */
+}
+
+.table-container thead th {
+  position: sticky; /* Rende l'intestazione "sticky" */
+  top: 0; /* Incolla l'intestazione alla parte superiore del contenitore */
+  z-index: 1; /* Assicura che l'intestazione sia sopra il contenuto che scorre */
+  background-color: #fff; /* Assicura che l'intestazione abbia uno sfondo opaco */
+}
