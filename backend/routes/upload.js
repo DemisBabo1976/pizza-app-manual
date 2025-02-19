@@ -15,7 +15,7 @@ const corsOptions = {
 router.use(cors(corsOptions));
 
 // Configurazione di Multer per salvare i file in una cartella uploads
-const storage = multer.diskStorage({
+const storage = multer({
   destination: (req, file, cb) => {
     const uploadDir = path.join(__dirname, '../uploads');
     cb(null, uploadDir);
@@ -42,7 +42,7 @@ router.post('/', upload.single('image'), (req, res) => {
   console.log("File caricato:", req.file);
   const imageUrl = `http://localhost:5000/uploads/${req.file.filename}`;
   console.log ( 'il path è', imageUrl)
-  res.send({ imageUrl: imageUrl });
+  res.json({ imageUrl: imageUrl });
 });
 
 module.exports = router;

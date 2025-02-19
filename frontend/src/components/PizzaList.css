@@ -5,9 +5,10 @@
 .pizza-card {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  border-radius: 8px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  height: 250px; /* Altezza fissa per le card */
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease-in-out;
 }
 
@@ -15,21 +16,29 @@
   transform: translateY(-5px);
 }
 
+.pizza-image-container {
+  height: 33%; /* 1/3 dell'altezza della card */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+  overflow: hidden; /* Importante per evitare che l'immagine sbordi */
+}
+
 .pizza-image {
   width: 100%;
-  height: 200px;
+  height: 100%;
   object-fit: cover;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
 }
 
 .pizza-content {
-  padding: 20px;
-  display: flex; /*Abilita Flexbox*/
-  flex-direction: column; /* Imposta la direzione principale come colonna */
-  justify-content: space-between;/*Distribuisce lo spazio tra gli elementi */
-  height: 100%; /* Assicura che il contenuto occupi l'altezza disponibile*/
+  height: 67%; /* 2/3 dell'altezza della card */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px;
 }
+
 
 .pizza-content h2 {
   font-size: 1.3rem;
@@ -39,20 +48,21 @@
 
 .pizza-content p {
   font-size: 1rem;
-  color: #666;
+  color: #667;
   flex-grow: 1; /*Permette alla descrizione di espandersi per riempire lo spazio*/
 }
 
 .pizza-content .pizza-price {
-  font-size: 1.2rem; /* Aumenta la dimensione del prezzo */
-  font-weight: bold;
-  color: #333;
-  text-align: right; /*Allinea il testo a destra*/
+    font-size: 1.2rem; /* Aumenta la dimensione del prezzo */
+    font-weight: bold;
+    color: #333;
+    text-align: right; /* Allinea il testo a destra */
+    margin-top: auto; /* Spinge il prezzo verso il basso */
 }
 
 /* Stile per le pizze senza immagine */
 .pizza-card .MuiCardMedia-root {
-    background-color: #f0f0f0; /* Colore di sfondo */
+    background-color: #f0f0f0;
     display: flex;
     justify-content: center;
     align-items: center;

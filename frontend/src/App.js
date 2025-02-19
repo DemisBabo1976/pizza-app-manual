@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Link, Routes, Outlet } from 'react-router-dom';
 import PizzaList from './components/PizzaList';
 import CategoryList from './components/CategoryList';
-import OrderList from './components/OrderList';
 import HomePage from './components/HomePage';
 import {
     Drawer,
@@ -19,6 +18,7 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import {Fastfood as FastfoodIcon, Category as CategoryIcon, ShoppingCart as ShoppingCartIcon, Home as HomeIcon, AccountCircle as AccountCircleIcon} from '@mui/icons-material';
 import AdminDashboard from './components/admin/AdminDashboard';
+import OrderPage from './components/OrderPage'; // Importa il componente OrderPage
 
 const drawerWidth = 240;
 
@@ -102,7 +102,7 @@ function App() {
                         <Route path="/" element={<HomePage />} />
                         <Route path="/pizzas" element={<PizzaList />} />
                         <Route path="/categories" element={<CategoryList />} />
-                        <Route path="/orders" element={<OrderList />} />
+                        <Route path="/orders" element={<OrderPage />} /> {/* Correzione: Usa OrderPage invece di OrderList */}
                         {/*CHIAMARE CORRETTAMENTE LA PAGINA ADMIN*/}
                         <Route path="/admin" element={<AdminDashboard />} />
                     </Routes>

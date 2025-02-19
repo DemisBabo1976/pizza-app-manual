@@ -19,8 +19,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AddIcon from '@mui/icons-material/Add';
 import './PizzaAdmin.css';
-import Snackbar from '@mui/material/Snackbar';  // Import Snackbar
-import Alert from '@mui/material/Alert';      // Import Alert
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import imageCompression from 'browser-image-compression'; // Importazione corretta
 
 const PizzaAdmin = () => {
     const [pizzas, setPizzas] = useState([]);
@@ -38,10 +39,11 @@ const PizzaAdmin = () => {
         ingredients: [],
         sizes: []
     });
-   const [selectedFile, setSelectedFile] = useState(null);
-    const [openSnackbar, setOpenSnackbar] = useState(false); // Gestione dello stato della Snackbar
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [compressedFile, setCompressedFile] = useState(null); // Nuovo stato per il file compresso
+    const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState(''); // Messaggio della Snackbar
-    const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // Tipo di Snackbar: success, error, warning, info
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     const fileInputRef = useRef(null);
 
@@ -64,22 +66,80 @@ const PizzaAdmin = () => {
         setNewPizza({ ...newPizza, [e.target.name]: e.target.value });
     };
 
-    const handleFileSelect = (event) => {
-        setSelectedFile(event.target.files[0]);
-        if (event.target.files && event.target.files[0]) {
-            let reader = new FileReader();
-            reader.onload = (e) => {
-                setNewPizza({...newPizza, imageUrl: e.target.result})
-            };
-            reader.readAsDataURL(event.target.files[0]);
+   const handleFileSelect = async (event) => {
+        const imageFile = event.target.files[0];
+
+        if (!imageFile) {
+            console.error("Nessun file selezionato");
+            return;
+        }
+
+        if (imageFile.size > 5 * 1024 * 1024) {
+            console.error("L'immagine è troppo grande");
+            setSnackbarMessage('L\'immagine è troppo grande. Si prega di selezionare un file più piccolo.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
+            return;
+        }
+
+        if (!imageFile.type.startsWith('image/')) {
+            console.error("Il file selezionato non è un'immagine");
+            setSnackbarMessage('Il file selezionato non è un\'immagine.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
+            return;
+        }
+
+        console.log('originalFile instanceof Blob', imageFile instanceof Blob);
+        console.log(`originalFile size ${imageFile.size / 1024 / 1024} MB`);
+
+        const options = {
+            maxSizeMB: 0.2,
+            maxWidthOrHeight: 800,
+            useWebWorker: true
+        }
+        try {
+            const compressedFile = await imageCompression(imageFile, options);
+            console.log('compressedFile instanceof Blob', compressedFile instanceof Blob);
+            console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`);
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setNewPizza({ ...newPizza, imageUrl: reader.result });
+            }
+            reader.readAsDataURL(compressedFile);
+            setSelectedFile(imageFile);
+            setCompressedFile(compressedFile);
+        } catch (error) {
+            console.log(error);
+            setSnackbarMessage('Errore durante la compressione dell\'immagine: ' + error.message);
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
         }
     };
 
-  const handleUpload = async () => {
-   
-    const data = new FormData()
-    data.append('file', selectedFile)
-  };
+   const handleUpload = async () => {
+        try {
+            const formData = new FormData();
+            formData.append('image', compressedFile); //Invia il file compresso
+
+            const response = await axios.post('http://localhost:5000/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            const imageUrlFromBackend = response.data.imageUrl;
+            setNewPizza({ ...newPizza, imageUrl: imageUrlFromBackend });
+        } catch (error) {
+            console.error('Errore durante l\'upload dell\'immagine:', error);
+              setSnackbarMessage('Errore durante l\'upload dell\'immagine:' + error.message);
+             setSnackbarSeverity('error');
+             setOpenSnackbar(true);
+
+            throw error;
+        }
+    };
 
   const handleCloseSnackbar = (event, reason) => {
         if (reason === 'clickaway') {
@@ -88,26 +148,19 @@ const PizzaAdmin = () => {
         setOpenSnackbar(false);
     };
 
-  const handleBrowseClick = () => {
+    const handleBrowseClick = () => {
+        fileInputRef.current.click();
+    };
 
-      // Eseguiamo l'upload e la generazione della anteprima solo se esiste un file
-      fileInputRef.current.click(); // Simula il click sull'input file nascosto
-  };
-
-
-    const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
         e.preventDefault();
-
-        console.log("Dati Pizza:", newPizza); // Aggiungi questo console.log
-
         try {
-            
-
+           if (newPizza.imageUrl) {
+                await handleUpload();
+            }
             if (selectedPizza) {
-                // Se c'è una pizza selezionata, aggiornala
                 await axios.put(`http://localhost:5000/pizzas/${selectedPizza._id}`, newPizza);
             } else {
-                // Altrimenti, crea una nuova pizza
                 await axios.post('http://localhost:5000/pizzas', newPizza);
             }
             fetchPizzas();
@@ -121,29 +174,32 @@ const PizzaAdmin = () => {
                 sizes: []
             });
             setSelectedPizza(null);
-            setSelectedFile(null); // Resetta il file selezionato;
-              setSnackbarMessage('Operazione eseguita con successo!');
-        setSnackbarSeverity('success');
-        setOpenSnackbar(true);
-    }  catch (err) {
-                setError(err);
-                console.error("Errore durante il salvataggio della pizza:", err);
-                if (err && err.response && err.response.data) {
-                    setSnackbarMessage('Errore durante l\'azione: ' + err.response.data.message);
-                } else {
-                    setSnackbarMessage('Si è verificato un errore sconosciuto durante il salvataggio.');
-                }
-                setSnackbarSeverity('error');
-                setOpenSnackbar(true);
+            setSelectedFile(null);
+             setCompressedFile(null)
+            setSnackbarMessage('Operazione eseguita con successo!');
+            setSnackbarSeverity('success');
+            setOpenSnackbar(true);
+        } catch (err) {
+            setError(err);
+            console.error("Errore durante il salvataggio della pizza:", err);
+            if (err && err.response && err.response.data) {
+                setSnackbarMessage('Errore durante l\'azione: ' + err.response.data.message);
+            } else {
+                setSnackbarMessage('Si è verificato un errore sconosciuto durante il salvataggio.');
             }
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
+        }
     };
+  
 
     const handleDelete = async (id) => {
         try {
             await axios.delete(`http://localhost:5000/pizzas/${id}`);
             fetchPizzas();
         } catch (err) {
-            setSelectedFile(null); // Resetta il file selezionato;
+            setSelectedFile(null);
+             setCompressedFile(null)
             setError(err);
             setSnackbarMessage('Pizza eliminata con successo!');
             setSnackbarSeverity('success');

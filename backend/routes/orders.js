@@ -1,42 +1,67 @@
 const express = require('express');
 const router = express.Router();
-const Order = require('../models/order');
+const OrderS = require('../models/OrderS');
+const Customer = require('../models/Customer');
+const Pizza = require('../models/pizza'); // Importa Pizza con la "p" minuscola
 
-// GET all orders
+// GET: Ottieni tutti gli ordini
 router.get('/', async (req, res) => {
-    try {
-        const orders = await Order.find().populate('items.pizza'); //popola anche le informazioni delle pizze negli ordini
-        res.json(orders);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
+  try {
+    const orders = await OrderS.find().populate('customer').populate('pizzas.pizza'); // Popola i riferimenti a cliente e pizze
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
-// GET one order
+// GET: Ottieni un ordine specifico per ID
 router.get('/:id', async (req, res) => {
-    try {
-        const order = await Order.findById(req.params.id).populate('items.pizza');
-        if (!order) {
-            return res.status(404).json({ message: 'Order not found' });
-        }
-        res.json(order);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
+  try {
+    const order = await OrderS.findById(req.params.id).populate('customer').populate('pizzas.pizza'); // Popola i riferimenti
+    if (!order) {
+      return res.status(404).json({ message: 'Ordine non trovato' });
     }
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
-// POST a new order
+// POST: Crea un nuovo ordine
 router.post('/', async (req, res) => {
-    const order = new Order({
-        customerName: req.body.customerName,
-        customerEmail: req.body.customerEmail,
-        items: req.body.items,
-        totalAmount: req.body.totalAmount,
-        orderDate: req.body.orderDate,
-        deliveryAddress: req.body.deliveryAddress,
-        deliveryTime: req.body.deliveryTime
-    });
+    const { customerId, orderType, pizzas, deliveryTime, notes } = req.body;
+
     try {
+        // Verifica se il cliente esiste
+        const customer = await Customer.findById(customerId);
+        if (!customer) {
+            return res.status(400).json({ message: 'Cliente non trovato' });
+        }
+
+        //Verifica che le pizze esistono
+        for (const item of pizzas) {
+            const pizza = await Pizza.findById(item.pizza);
+            if (!pizza) {
+                return res.status(400).json({ message: 'Pizza non trovata' });
+            }
+        }
+
+        // Calcola il prezzo totale
+        let totalPrice = 0;
+        for (const item of pizzas) {
+            const pizza = await Pizza.findById(item.pizza);
+            totalPrice += pizza.price * item.quantity;
+        }
+
+        const order = new OrderS({
+            customer: customerId,
+            orderType: orderType,
+            pizzas: pizzas,
+            deliveryTime: deliveryTime,
+            totalPrice: totalPrice,
+            notes: notes
+        });
+
         const newOrder = await order.save();
         res.status(201).json(newOrder);
     } catch (err) {
@@ -44,21 +69,20 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT (update) an existing order
+// PUT: Aggiorna un ordine esistente per ID
 router.put('/:id', async (req, res) => {
     try {
-        const order = await Order.findById(req.params.id);
+        const order = await OrderS.findById(req.params.id);
         if (!order) {
-            return res.status(404).json({ message: 'Order not found' });
+            return res.status(404).json({ message: 'Ordine non trovato' });
         }
-        order.customerName = req.body.customerName || order.customerName;
-        order.customerEmail = req.body.customerEmail || order.customerEmail;
-        order.customerPhone = req.body.customerPhone || order.customerPhone;
-        order.items = req.body.items || order.items;
-        order.totalAmount = req.body.totalAmount || order.totalAmount;
-        order.orderDate = req.body.orderDate || order.orderDate;
-        order.deliveryAddress = req.body.deliveryAddress || order.deliveryAddress;
+
+        order.customer = req.body.customer || order.customer;
+        order.orderType = req.body.orderType || order.orderType;
         order.deliveryTime = req.body.deliveryTime || order.deliveryTime;
+        order.totalPrice = req.body.totalPrice || order.totalPrice;
+        order.status = req.body.status || order.status;
+        order.notes = req.body.notes || order.notes;
 
         const updatedOrder = await order.save();
         res.json(updatedOrder);
@@ -67,14 +91,16 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// DELETE an order
+// DELETE: Elimina un ordine per ID
 router.delete('/:id', async (req, res) => {
     try {
-        const order = await Order.findByIdAndDelete(req.params.id);
+        const order = await OrderS.findById(req.params.id);
         if (!order) {
-            return res.status(404).json({ message: 'Order not found' });
+            return res.status(404).json({ message: 'Ordine non trovato' });
         }
-        res.json({ message: 'Order deleted' });
+
+        await order.remove();
+        res.json({ message: 'Ordine eliminato' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
