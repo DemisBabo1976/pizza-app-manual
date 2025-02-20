@@ -1,0 +1,28 @@
+.react-datepicker-wrapper {
+  width: 100%; /* Occupare l'intera larghezza */
+}
+
+.react-datepicker__input-container {
+  display: block; /* Rimuovere l'inline-block */
+  width: 100%; /* Assicurarsi che occupi l'intera larghezza */
+}
+
+.react-datepicker__input-container input {
+  width: 100%; /* Larghezza del campo di input */
+  padding: 8px 12px; /* Spaziatura interna simile a TextField */
+  font-size: 1rem; /* Dimensione del testo simile a TextField */
+  border: 1px solid #ced4da; /* Bordo simile a TextField */
+  border-radius: 4px; /* Bordo arrotondato simile a TextField */
+  box-sizing: border-box; /* Includere padding e bordo nella larghezza */
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif; /* Stessa font di Material UI */
+  line-height: 1.4375em; /* Interlinea simile a TextField */
+  letter-spacing: 0.00938em; /* Spaziatura delle lettere simile a TextField */
+  color: rgba(0, 0, 0, 0.87); /* Colore del testo simile a TextField */
+  background-color: #fff; /* Sfondo bianco */
+}
+
+.react-datepicker__input-container input:focus {
+  outline: none; /* Rimuovere il bordo di focus predefinito */
+  border-color: #1976d2; /* Colore del bordo al focus (Material UI primary) */
+  box-shadow: 0 0 0 0.2rem rgba(25, 118, 210, 0.25); /* Ombra al focus (Material UI primary) */
+}

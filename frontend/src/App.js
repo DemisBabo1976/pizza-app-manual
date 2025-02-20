@@ -104,7 +104,7 @@ function App() {
                         <Route path="/categories" element={<CategoryList />} />
                         <Route path="/orders" element={<OrderPage />} /> {/* Correzione: Usa OrderPage invece di OrderList */}
                         {/*CHIAMARE CORRETTAMENTE LA PAGINA ADMIN*/}
-                        <Route path="/admin" element={<AdminDashboard />} />
+                        <Route path="/admin/*" element={<AdminDashboard />} />
                     </Routes>
                     <Outlet />
                 </Box>

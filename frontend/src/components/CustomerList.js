@@ -31,23 +31,24 @@ function CustomerList({ onEditCustomer }) {
   };
 
   return (
-    <List>
-      {customers.map(customer => (
-        <ListItem key={customer._id}
-                  secondaryAction={
-                      <Box>
-                          <IconButton edge="end" aria-label="edit" onClick={() => onEditCustomer(customer)}>
-                              <EditIcon />
-                          </IconButton>
-                          <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(customer._id)}>
-                              <DeleteIcon />
-                          </IconButton>
-                      </Box>
-                  }>
-          <ListItemText primary={`${customer.firstName} ${customer.lastName}`} />
-        </ListItem>
-      ))}
-    </List>
+    <Box sx={{ maxHeight: customers.length > 4 ? '200px' : 'auto', overflowY: 'auto' }}>
+      <List>
+        {customers.map(customer => (
+          <ListItem key={customer._id} secondaryAction={
+            <Box>
+              <IconButton edge="end" aria-label="edit" onClick={() => onEditCustomer(customer)}>
+                <EditIcon />
+              </IconButton>
+              <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(customer._id)}>
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          }>
+            <ListItemText primary={`${customer.firstName} ${customer.lastName}`} />
+          </ListItem>
+        ))}
+      </List>
+    </Box>
   );
 }
 

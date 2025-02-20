@@ -23,7 +23,10 @@ router.post('/', async (req, res) => {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     phone: req.body.phone,
-    address: req.body.address
+    address: req.body.address,
+    birthDate: req.body.birthDate,
+    email: req.body.email,
+    loyaltyPoints: req.body.loyaltyPoints
   });
 
   try {
@@ -48,6 +51,15 @@ router.patch('/:id', getCustomer, async (req, res) => {
   if (req.body.address != null) {
     res.customer.address = req.body.address;
   }
+  if (req.body.birthDate != null) {
+    res.customer.birthDate = req.body.birthDate;
+  }
+  if (req.body.email != null) {
+    res.customer.email = req.body.email;
+  }
+  if (req.body.loyaltyPoints != null) {
+    res.customer.loyaltyPoints = req.body.loyaltyPoints;
+  }
 
   try {
     const updatedCustomer = await res.customer.save();
@@ -60,7 +72,7 @@ router.patch('/:id', getCustomer, async (req, res) => {
 // DELETE elimina un cliente
 router.delete('/:id', getCustomer, async (req, res) => {
   try {
-    await res.customer.deleteOne(); // Usa deleteOne() invece di remove()
+    await res.customer.deleteOne();
     res.json({ message: 'Cliente eliminato' });
   } catch (err) {
     console.error("Errore durante l'eliminazione del cliente:", err);

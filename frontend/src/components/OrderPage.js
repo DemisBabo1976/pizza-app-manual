@@ -8,11 +8,9 @@ import {
 } from '@mui/material';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle'; // Importa l'icona AccountCircle
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CustomerList from './CustomerList';
 import CustomerForm from './CustomerForm';
-
-//import './OrderPage.css'; //Commentato perchè non c'è
 
 function OrderPage() {
     const [orders, setOrders] = useState([]);
@@ -20,8 +18,8 @@ function OrderPage() {
     const [error, setError] = useState(null);
     const [settings, setSettings] = useState(null);
     const [isCustomerFormOpen, setIsCustomerFormOpen] = useState(false);
-    const [selectedCustomer, setSelectedCustomer] = useState(null); //Per editare
-    const [key, setKey] = useState(0); //Forza il re-render del CustomerList
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [key, setKey] = useState(0);
 
     useEffect(() => {
         async function fetchData() {
@@ -104,7 +102,7 @@ function OrderPage() {
     const maxHeight = rowHeight * visibleRows;
 
     const handleOpenCustomerForm = () => {
-        setSelectedCustomer(null); //Resetta il cliente selezionato
+        setSelectedCustomer(null);
         setIsCustomerFormOpen(true);
     };
 
@@ -118,7 +116,6 @@ function OrderPage() {
         setSelectedCustomer(null);
     };
 
-    //Forza il re-render della lista
     const handleCustomerFormSubmit = () => {
         handleCloseCustomerForm();
         setKey(key + 1);
@@ -190,7 +187,7 @@ function OrderPage() {
                                         <Typography variant="body1">{orderCount} Ordini</Typography>
                                         {ordersForThisSlot.map(order => (
                                             <Typography key={order._id} variant="caption">
-                                                {order.customer.firstName} {order.customer.lastName}
+                                                {order.customer?.firstName} {order.customer?.lastName}
                                             </Typography>
                                         ))}
                                     </Box>
@@ -206,10 +203,7 @@ function OrderPage() {
                 <DialogTitle>{selectedCustomer ? 'Modifica Cliente' : 'Nuovo Cliente'}</DialogTitle>
                 <DialogContent>
                     <CustomerForm initialCustomer={selectedCustomer} onSubmit={handleCustomerFormSubmit} />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseCustomerForm}>Annulla</Button>
-                </DialogActions>
+                </DialogContent>                
             </Dialog>
         </Container>
     );
